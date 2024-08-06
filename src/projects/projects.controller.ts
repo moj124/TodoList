@@ -1,0 +1,244 @@
+import { Request, Response } from 'express';
+import { Db, MongoClient, ObjectId } from 'mongodb';
+import DatabaseHandler from '../db/DatabaseHandler';
+import validateObjectId from '../utils/validateObjectId';
+import { Status } from '../types/Status';
+
+const PROJECTS = 'projects';
+
+export default class ProjectsController {
+    client: MongoClient;
+    db: Db;
+
+    constructor (client: MongoClient) {
+        this.client = client;
+        this.db = client.db();
+    }
+
+    public async getAllProjects(req: Request, res: Response): Promise<void> {
+        const operation =  async () => {
+            return this.db.collection(PROJECTS).find().toArray();
+        }
+
+        try {
+            const projects = await DatabaseHandler.handleAsyncOperation(
+                this.client, 
+                operation,
+            )
+            res.status(200).json(projects);
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    }
+
+    public async searchProjectsByName(req: Request, res: Response): Promise<void> {
+        const { name } = req.params;
+
+        if (!name) {
+            res.status(400).json({ message: 'Invalid status params parameter' });
+            return;
+        }
+        
+        const operation =  async () => {
+            return this.db.collection(PROJECTS).find({ name }).toArray();
+        }
+
+        try {
+            const projects = await DatabaseHandler.handleAsyncOperation(
+                this.client, 
+                operation,
+            )
+            res.status(200).json(projects);
+        } catch (error) {
+            console.error('Error fetching projects by status:', error);
+            res.status(500).json({ message: 'Failed to fetch projects by status' });
+        }
+    }
+
+    public async sortProjectsByDate(req: Request, res: Response): Promise<void> {
+        const sortObject: { [key: string]: 1 } = {
+            createdAt: 1,
+            deadlineAt: 1,
+            doneAt: 1
+        };
+
+        const operation =  async () => {
+            console.log('here')
+            return this.db.collection(PROJECTS)
+                .find()
+                .sort(sortObject)
+                .toArray();
+        }
+
+        try {
+            const projects = await DatabaseHandler.handleAsyncOperation(
+                this.client, 
+                operation,
+            )
+            
+            res.status(200).json(projects);
+        } catch (error) {
+            console.error('Error fetching projects by date:', error);
+            res.status(500).json({ message: 'Failed to fetch projects by date' });
+        }
+    }
+
+    public async createProject(req: Request, res: Response): Promise<void> {
+        const data = {
+            name: req.body.name,
+            createdAt: new Date(),
+            deadlineAt: null,
+            tasks: [],
+        };
+
+        const operation = async () => {
+            return this.db.collection(PROJECTS).insertOne(data);
+        };
+        try {
+            await DatabaseHandler.handleAsyncOperation(
+                this.client, 
+                operation,
+                true,
+            );
+            
+            res.status(201).json(data);
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    }
+
+    public async updateProject(req: Request, res: Response): Promise<void> {
+        const objId = new ObjectId(req.params.id);
+        const objectId = validateObjectId(req.params.id);
+
+        if (!objectId) {
+            res.status(400).json({ message: 'Invalid ID format' });
+            return;
+        }
+
+        const {name, deadlineAt} = req.body;
+        try {
+            const existingProject = await this.db.collection(PROJECTS).findOne({ _id: objId});
+
+            if (!existingProject) {
+                res.status(404).json({ message: 'Project not found' });
+                return;
+            }
+
+            const dataToUpdate = {
+                ...existingProject,
+                name,
+                deadlineAt: deadlineAt ? new Date(deadlineAt) : null,
+            };
+
+            const operation = async () => {
+                return this.db.collection(PROJECTS).updateOne(
+                    { _id: objId },
+                    { $set: dataToUpdate }
+                );
+            };
+
+            const result = await DatabaseHandler.handleAsyncOperation(
+                this.client,
+                operation,
+                true
+            );
+
+            if (result.matchedCount > 0) {
+                if (result.modifiedCount > 0) {
+                    res.status(200).json({ message: 'Project updated successfully' });
+                } else {
+                    res.status(304).json({ message: 'No changes made to the project' });
+                }
+            } else {
+                res.status(404).json({ message: 'Project not found' });
+            }
+        } catch (error) {
+            console.error('Error updating project:', error);
+            res.status(500).json({ message: 'Failed to update project' });
+        }
+    }
+
+    public async assignTasksToProject(req: Request, res: Response): Promise<void> {
+        const objId = new ObjectId(req.params.id);
+        const objectId = validateObjectId(req.params.id);
+
+        if (!objectId) {
+            res.status(400).json({ message: 'Invalid ID format' });
+            return;
+        }
+
+        const tasks = req.body.tasks;
+        if (!Array.isArray(tasks) || !tasks.every(task => typeof task === 'object' && task !== null)) {
+            res.status(400).json({ message: 'Invalid tasks format' });
+            return;
+        }
+
+        try {
+            const existingProject = await this.db.collection(PROJECTS).findOne({ _id: objId});
+
+            if (!existingProject) {
+                res.status(404).json({ message: 'Project not found' });
+                return;
+            }
+
+            const operation = async () => {
+                return this.db.collection(PROJECTS).updateOne(
+                    { _id: objId },
+                    { $push: { tasks: { $each: tasks }} } as any
+                );
+            };
+
+            const result = await DatabaseHandler.handleAsyncOperation(
+                this.client,
+                operation,
+                true
+            );
+
+            if (result.matchedCount > 0) {
+                if (result.modifiedCount > 0) {
+                    res.status(200).json({ message: 'Project updated successfully' });
+                } else {
+                    res.status(304).json({ message: 'No changes made to the project' });
+                }
+            } else {
+                res.status(404).json({ message: 'Project not found' });
+            }
+        } catch (error) {
+            console.error('Error updating project:', error);
+            res.status(500).json({ message: 'Failed to update project' });
+        }
+    }
+
+    public async deleteProject(req: Request, res: Response): Promise<void> {
+        const objId = new ObjectId(req.params.id);
+        const objectId = validateObjectId(req.params.id);
+
+        if (!objectId) {
+            res.status(400).json({ message: 'Invalid ID format' });
+            return;
+        }
+
+        const operation =  async () => {
+            return this.db.collection(PROJECTS).deleteOne({_id: objId});
+        }
+
+        try {
+            const result = await DatabaseHandler.handleAsyncOperation(
+                this.client, 
+                operation,
+                true,
+            )
+            
+            if (result.deletedCount > 0) {
+                res.status(200).json({ message: 'Project deleted' });
+            } else {
+                res.status(404).json({ message: 'Project not found' });
+            }
+        } catch (error) {
+            console.error('Error deleting project:', error);
+            res.status(500).json({ message: 'Failed to delete project' });
+        }
+    }
+}
+
