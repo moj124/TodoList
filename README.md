@@ -18,7 +18,7 @@ A MERN backend service to serve a Todo List set of functionalities.
     - deadlineAt: a required data object, can be null
 
     Example Project object.
-    ```
+    ```json
     {
         "_id": {
             "$oid": "66b2aa69176c97fc9f4ce286"
@@ -56,7 +56,7 @@ A MERN backend service to serve a Todo List set of functionalities.
     - deadlineAt: a required data object, can be null
 
     Example Task object
-    ```
+    ```json
     {
         "_id": {
             "$oid": "66b2a926176c97fc9f4ce284"
