@@ -7,7 +7,9 @@
     "start": "node dist/main.js",
     "serve": "ts-node src/main.ts",
     "serve:watch": "ts-node-dev --respawn src/main.ts",
-    "setupDatabase": "npx ts-node src/db/initializeDatabase.ts",       
+    "setupDatabase": "npx ts-node src/db/initializeDatabase.ts", 
+    "runProjectsAggregate": "npx ts-node src/db/runProjectAggregate.ts",
+    "runTasksAggregate": "npx ts-node src/db/runTasksAggregate.ts",       
     "build": "npx tsc",
     "test": "npx jest"
   },

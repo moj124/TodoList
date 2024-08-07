@@ -4,10 +4,25 @@
 A MERN backend service to serve a Todo List set of functionalities.
 
 ### Key Features
-- db: stores the validator schemas, initialization of database collection and handles read/write operations involving the database.
+- db: stores the validator schemas, aggregations, initialization of database collection and handles read/write operations involving the database.
 - projects: houses the controllers and routes specifc to 'projects' collection operations.
 - tasks: houses the controllers and routes specifc to 'tasks' collection operations.
-- main.ts: is the entrypoint file, is the first file to be run. Handles database connection and generic setup configurations.
+- main.ts: is the entrypoint file, and the first file to be run. Handles database connection and generic setup configurations.
+
+## Validation Schemas
+
+### Projects 
+    - name: a required string
+    - tasks: a required array of Tasks, can be empty array
+    - createdAt: a required date object
+    - deadlineAt: a required data object, can be null
+### Tasks
+    - name: a required string
+    - status: a required string, I've enforce functionally enum value of ['todo', 'done'].
+    - createdAt: a required date object
+    - completedAt: a required data object, can be null
+    - deadlineAt: a required data object, can be null
+
 
 ## Instructions
 
@@ -36,7 +51,19 @@ Alternatively to watch for code changes in development mode and run the server.
 npm run serve:watch
 ```
 
+### Aggregates
+
+To execute the mongodb aggregration of all projects with tasks due 'today'.
+```bash
+npm run runProjectsAggregate
+```
+
+To execute the mongodb aggregration of all tasks with a project due 'today'.
+```bash
+npm run runTasksAggregate
+```
+
 ### Prerequisites
-    - Install [Node](https://nodejs.org/en)
+    Install [Node](https://nodejs.org/en)
 
 
