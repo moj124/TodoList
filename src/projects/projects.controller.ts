@@ -88,7 +88,6 @@ export default class ProjectsController {
         };
 
         const operation =  async () => {
-            console.log('here')
             return this.db.collection(PROJECTS)
                 .find()
                 .sort(sortObject)
