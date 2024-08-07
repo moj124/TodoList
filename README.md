@@ -41,6 +41,6 @@ npm run serve:watch
 ```
 
 ### Prerequisites
-    [Node](https://nodejs.org/en)
+    - Install [Node](https://nodejs.org/en)
 
 
