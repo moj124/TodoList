@@ -2,10 +2,13 @@ import { Request, Response } from 'express';
 import { Db, MongoClient, ObjectId } from 'mongodb';
 import DatabaseHandler from '../db/DatabaseHandler';
 import validateObjectId from '../utils/validateObjectId';
-import { Status } from '../types/Status';
+import { PROJECTS } from '../types/Constants';
 
-const PROJECTS = 'projects';
-
+/**
+ * Class for handling CRUD operations for projects collection with optional transaction support and error handling.
+ * 
+ * @param {MongoClient} client - The mongodb MongoClient object.
+ */
 export default class ProjectsController {
     client: MongoClient;
     db: Db;
@@ -15,6 +18,13 @@ export default class ProjectsController {
         this.db = client.db();
     }
 
+    /**
+     * Retrieves all projects from the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async getAllProjects(req: Request, res: Response): Promise<void> {
         const operation =  async () => {
             return this.db.collection(PROJECTS).find().toArray();
@@ -31,6 +41,13 @@ export default class ProjectsController {
         }
     }
 
+    /**
+     * Searches for projects by name in the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async searchProjectsByName(req: Request, res: Response): Promise<void> {
         const { name } = req.params;
 
@@ -55,6 +72,13 @@ export default class ProjectsController {
         }
     }
 
+    /**
+     * Sorts projects by date fields in the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async sortProjectsByDate(req: Request, res: Response): Promise<void> {
         const sortObject: { [key: string]: 1 } = {
             createdAt: 1,
@@ -83,6 +107,13 @@ export default class ProjectsController {
         }
     }
 
+    /**
+     * Creates a new project in the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async createProject(req: Request, res: Response): Promise<void> {
         const data = {
             name: req.body.name,
@@ -107,6 +138,13 @@ export default class ProjectsController {
         }
     }
 
+    /**
+     * Updates an existing project in the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async updateProject(req: Request, res: Response): Promise<void> {
         const objId = new ObjectId(req.params.id);
         const objectId = validateObjectId(req.params.id);
@@ -159,6 +197,13 @@ export default class ProjectsController {
         }
     }
 
+    /**
+     * Updates an existing project's tasks property in the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async assignTasksToProject(req: Request, res: Response): Promise<void> {
         const objId = new ObjectId(req.params.id);
         const objectId = validateObjectId(req.params.id);
@@ -210,6 +255,13 @@ export default class ProjectsController {
         }
     }
 
+    /**
+     * Deletes a project from the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async deleteProject(req: Request, res: Response): Promise<void> {
         const objId = new ObjectId(req.params.id);
         const objectId = validateObjectId(req.params.id);

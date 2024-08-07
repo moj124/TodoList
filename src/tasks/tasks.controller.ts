@@ -3,9 +3,13 @@ import { Db, MongoClient, ObjectId } from 'mongodb';
 import DatabaseHandler from '../db/DatabaseHandler';
 import validateObjectId from '../utils/validateObjectId';
 import { Status } from '../types/Status';
+import { TASKS } from '../types/Constants';
 
-const TASKS = 'tasks';
-
+/**
+ * Class for handling CRUD operations for tasks collection with optional transaction support and error handling.
+ * 
+ * @param {MongoClient} client - The mongodb MongoClient object.
+ */
 export default class TasksController {
     client: MongoClient;
     db: Db;
@@ -15,19 +19,23 @@ export default class TasksController {
         this.db = client.db();
     }
 
+    /**
+     * Retrieves all tasks from the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async getAllTasks(req: Request, res: Response): Promise<void> {
-        console.log('hi')
         const operation =  async () => {
             return this.db.collection(TASKS).find().toArray();
         }
-        console.log('hi2')
 
         try {
             const tasks = await DatabaseHandler.handleAsyncOperation(
                 this.client, 
                 operation,
             )
-        console.log('hi')
 
             res.status(200).json(tasks);
         } catch (error) {
@@ -36,6 +44,13 @@ export default class TasksController {
         }
     }
 
+    /**
+     * Retrieves all tasks filtered by their status from the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async getTasksByStatus(req: Request, res: Response): Promise<void> {
         const { status } = req.params;
 
@@ -60,6 +75,13 @@ export default class TasksController {
         }
     }
 
+    /**
+     * Searches for tasks by name in the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async searchTasksByName(req: Request, res: Response): Promise<void> {
         const { name } = req.params;
 
@@ -84,6 +106,13 @@ export default class TasksController {
         }
     }
 
+    /**
+     * Sorts tasks by date fields in the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async sortTasksByDate(req: Request, res: Response): Promise<void> {
         const sortObject: { [key: string]: 1 } = {
             createdAt: 1,
@@ -92,7 +121,6 @@ export default class TasksController {
         };
 
         const operation =  async () => {
-            console.log('here')
             return this.db.collection(TASKS)
                 .find()
                 .sort(sortObject)
@@ -112,6 +140,13 @@ export default class TasksController {
         }
     }
 
+    /**
+     * Creates a new task in the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async createTask(req: Request, res: Response): Promise<void> {
         const data = {
             ...req.body,
@@ -140,6 +175,13 @@ export default class TasksController {
         }
     }
 
+    /**
+     * Updates an existing task in the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async updateTask(req: Request, res: Response): Promise<void> {
         const objId = new ObjectId(req.params.id);
         const objectId = validateObjectId(req.params.id);
@@ -194,6 +236,13 @@ export default class TasksController {
         }
     }
 
+    /**
+     * Deletes a task from the database.
+     * 
+     * @param {Request} req - The Express request object.
+     * @param {Response} res - The Express response object.
+     * @returns {Promise<void>} A promise that resolves when the operation is complete.
+     */
     public async deleteTask(req: Request, res: Response): Promise<void> {
         const objId = new ObjectId(req.params.id);
         const objectId = validateObjectId(req.params.id);
