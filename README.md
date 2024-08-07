@@ -9,9 +9,6 @@ A MERN backend service to serve a Todo List set of functionalities.
 - tasks: houses the controllers and routes specifc to 'tasks' collection operations.
 - main.ts: is the entrypoint file, is the first file to be run. Handles database connection and generic setup configurations.
 
-### Issues to fix
-- Sorting of tasks and projects by date 'searchProjectsByName' & 'searchTasksByName' is not complete and will throw an error.
-
 ## Instructions
 
 To install the package dependencies.

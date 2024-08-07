@@ -1,8 +1,8 @@
 type Task = {
-    _id: string;
+    _id?: string;
     name: string;
-    completedAt: string;
-    deadlineAt: string;
+    completedAt: string | null;
+    deadlineAt: string | null;
     createdAt: string;
     status: string;
 }

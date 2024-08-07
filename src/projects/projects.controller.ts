@@ -218,8 +218,8 @@ export default class ProjectsController {
 
         const formattedTasks = tasks.map((elem: Task) => ({
             ...elem,
-            completedAt: new Date(elem.completedAt),
-            deadlineAt: new Date(elem.deadlineAt),
+            completedAt: elem?.completedAt ? new Date(elem?.completedAt) : null,
+            deadlineAt: elem?.deadlineAt ? new Date(elem?.deadlineAt) : null,
             createdAt: new Date(elem.createdAt),
         }));
 
