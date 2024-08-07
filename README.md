@@ -17,7 +17,7 @@ A MERN backend service to serve a Todo List set of functionalities.
 
 To install the package dependencies.
 ```bash
-    npm install
+npm install
 ```
 
 Copy '.env.example' to a new file '.env' and replace the environment variable with your own database and port mappings.
@@ -27,20 +27,20 @@ Important to create the 'projects' and 'tasks' collection with your database.
 
 NOTE: please delete your collections of 'projects' and 'tasks' before running this command, it will automatically create the collections required under 'todoList' database name.
 ```bash
-    npm run setupDatabase
+npm run setupDatabase
 ```
 
 To run the server.
 ```bash
-    npm run serve
+npm run serve
 ```
 
 Alternatively to watch for code changes in development mode and run the server.
 ```bash
-    npm run serve:watch
+npm run serve:watch
 ```
 
 ### Prerequisites
-    - [Node](https://nodejs.org/en)
+    [Node](https://nodejs.org/en)
 
 
