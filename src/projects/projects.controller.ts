@@ -3,6 +3,7 @@ import { Db, MongoClient, ObjectId } from 'mongodb';
 import DatabaseHandler from '../db/DatabaseHandler';
 import validateObjectId from '../utils/validateObjectId';
 import { PROJECTS } from '../types/Constants';
+import Task from '../types/Task';
 
 /**
  * Class for handling CRUD operations for projects collection with optional transaction support and error handling.
@@ -214,7 +215,15 @@ export default class ProjectsController {
         }
 
         const tasks = req.body.tasks;
-        if (!Array.isArray(tasks) || !tasks.every(task => typeof task === 'object' && task !== null)) {
+
+        const formattedTasks = tasks.map((elem: Task) => ({
+            ...elem,
+            completedAt: new Date(elem.completedAt),
+            deadlineAt: new Date(elem.deadlineAt),
+            createdAt: new Date(elem.createdAt),
+        }));
+
+        if (!Array.isArray(formattedTasks) || !formattedTasks.every(task => typeof task === 'object' && task !== null)) {
             res.status(400).json({ message: 'Invalid tasks format' });
             return;
         }
@@ -230,7 +239,7 @@ export default class ProjectsController {
             const operation = async () => {
                 return this.db.collection(PROJECTS).updateOne(
                     { _id: objId },
-                    { $push: { tasks: { $each: tasks }} } as any
+                    { $push: { tasks: { $each: formattedTasks }} } as any
                 );
             };
 

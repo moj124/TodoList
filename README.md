@@ -11,7 +11,6 @@ A MERN backend service to serve a Todo List set of functionalities.
 
 ### Issues to fix
 - Sorting of tasks and projects by date 'searchProjectsByName' & 'searchTasksByName' is not complete and will throw an error.
-- Assigning tasks to project is failing to update the 'tasks' property of the project object.
 
 ## Instructions
 
