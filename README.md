@@ -16,6 +16,38 @@ A MERN backend service to serve a Todo List set of functionalities.
     - tasks: a required array of Tasks, can be empty array
     - createdAt: a required date object
     - deadlineAt: a required data object, can be null
+
+    Example Project object.
+    ```
+    {
+        "_id": {
+            "$oid": "66b2aa69176c97fc9f4ce286"
+        },
+        "name": "project4",
+        "createdAt": {
+            "$date": "2024-08-06T22:57:45.060Z"
+        },
+        "deadlineAt": {
+            "$date": "2024-08-07T07:09:11.884Z"
+        },
+        "tasks": [
+            {
+                "_id": "66b2a926176c97fc9f4ce284",
+                "name": "task3",
+                "completedAt": {
+                    "$date": "1970-01-01T00:00:00.000Z"
+                },
+                "deadlineAt": {
+                    "$date": "1970-01-01T00:00:00.000Z"
+                },
+                "status": "todo",
+                "createdAt": {
+                    "$date": "2024-08-06T22:52:22.968Z"
+                }
+            }
+        ]
+    }
+    ```
 ### Tasks
     - name: a required string
     - status: a required string, I've enforce functionally enum value of ['todo', 'done'].
@@ -23,6 +55,21 @@ A MERN backend service to serve a Todo List set of functionalities.
     - completedAt: a required data object, can be null
     - deadlineAt: a required data object, can be null
 
+    Example Task object
+    ```
+    {
+        "_id": {
+            "$oid": "66b2a926176c97fc9f4ce284"
+        },
+        "name": "task3",
+        "completedAt": null,
+        "deadlineAt": null,
+        "status": "todo",
+        "createdAt": {
+            "$date": "2024-08-06T22:52:22.968Z"
+        }
+    }
+    ```
 
 ## Instructions
 
