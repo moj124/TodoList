@@ -8,25 +8,7 @@ const taskswithProjectsDueTodayAggregate = [
     }
   },
   {
-    $lookup: {
-      from: "tasks",
-      localField: "tasks",
-      foreignField: "_id",
-      as: "tasksDetails"
-    }
+    $unwind: "$tasks"
   },
-  {
-    $unwind: "$tasksDetails"
-  },
-  {
-    $replaceRoot: { newRoot: "$tasksDetails" }
-  },
-  {
-    $project: {
-      _id: 1,
-      name: 1,
-      deadlineAt: 1
-    }
-  }
 ];
 export default taskswithProjectsDueTodayAggregate;

@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb';
 import { config } from 'dotenv';
-import express from 'express';
+import express, { Express } from 'express';
 import cors from 'cors';
 
 import createTasksRouter from './tasks/tasks.routes';
@@ -23,7 +23,9 @@ app.use(express.json());
  * @returns {Promise<void>} The result of the asynchronous operation.
  * @throws {Error} Throws an error if the database connection fails, causing the process to exit with a status code of 1.
  */
-const setupDBConnection = async () => {
+const setupDBConnection = async (app: Express) => {
+    if(!(app instanceof express)) throw new Error('Not an express app');
+
     try {
         const client = await MongoClient.connect(process.env.DATABASE_URL!);
 
@@ -46,4 +48,4 @@ const setupDBConnection = async () => {
     }
 }
 
-setupDBConnection();
+setupDBConnection(app);
